@@ -1,0 +1,49 @@
+
+trigger:
+  branches:
+    include:
+    - develop
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+
+- task: PowerShell@2
+  displayName: Configure vue.config.js to use the latest version in the publication.
+  inputs:
+    targetType: 'inline'
+    script: |
+      (Get-Content $(Build.SourcesDirectory)/*.Api/client-app/vue.config.js).replace('{{version}}', 'develop') | Set-Content $(Build.SourcesDirectory)/*.Api/client-app/vue.config.js 
+
+- task: NuGetCommand@2
+  displayName: Restore nuget packages.
+  inputs:
+    command: 'restore'
+    restoreSolution: '**/*.sln'
+    feedsToUse: 'config'
+    nugetConfigPath: './nuget.config'
+
+- task: DotNetCoreCLI@2  
+  displayName: 'Build Project'
+  inputs:
+    command: 'build'
+    projects: '**/*.Api.csproj'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Build project mode publish - EnvironmentName=production'
+  inputs:
+    command: 'publish'
+    publishWebProjects: true
+    arguments: '/p:EnvironmentName=production'     
+    modifyOutputPath: true
+
+- task: AzureRmWebAppDeployment@4
+  displayName: 'Publish project into Azure App Service'
+  inputs:
+    ConnectionType: 'AzureRM'
+    azureSubscription: {YOUR SUBSCRIPTION IN PORTAL AZURE}
+    appType: 'webApp'
+    WebAppName: {NAME YOUR PROJECT}
+    VirtualApplication: '/develop'
+    packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'  

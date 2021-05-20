@@ -1,0 +1,91 @@
+trigger:
+  branches:
+    include:
+    - master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  LATEST_VERSION: ''
+
+steps:
+
+- task: PowerShell@2
+  displayName: Identify latest version.
+  inputs:
+    targetType: 'inline'
+    script: |
+      $latestVersion = git tag --sort=v:refname | Select-Object -Last 1      
+      echo "Latest version is $latestVersion"
+      Write-Host "##vso[task.setvariable variable=LATEST_VERSION;]$latestVersion"
+
+- task: PowerShell@2
+  displayName: Configure vue.config.js to use the latest version in the publication.
+  inputs:
+    targetType: 'inline'
+    script: |
+      $latestVersion = $Env:LATEST_VERSION
+      (Get-Content $(Build.SourcesDirectory)/*.Api/client-app/vue.config.js).replace('{{version}}', $latestVersion) | Set-Content $(Build.SourcesDirectory)/*.Api/client-app/vue.config.js 
+
+- task: AzureCLI@2
+  displayName: Check if its necessary to create a virtual path for the new version.
+  inputs:
+    azureSubscription: {YOUR SUBSCRIPTION IN PORTAL AZURE}
+    scriptType: 'pscore'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      $virtualApplications = (az webapp config show --name {NAME YOUR PROJECT} -g {NAME YOUT RESOURCE GROUP} --query "virtualApplications") | ConvertFrom-Json
+      $latestVersion = $Env:LATEST_VERSION
+      if(!($virtualApplications | ConvertTo-Json).Contains($latestVersion))
+      {
+        $jsonContent = [PSCustomObject]@{
+          "physicalPath" = "site\wwwroot\$latestVersion"
+          "preloadEnabled" = $false
+          "virtualDirectories" = $null
+          "virtualPath" = "/$latestVersion" 
+        }  
+        $virtualApplications += $jsonContent
+        $virtualApplications = $virtualApplications | ConvertTo-Json
+        $jsonFile = '"{{\"virtualApplications\": {0} }}"' -f $virtualApplications.Replace('"','\"')
+        
+        az webapp config set --name {NAME YOUR PROJECT} --resource-group {NAME YOUT RESOURCE GROUP} --generic-configurations $jsonFile
+        
+        echo 'Virtual path to the version was created'
+
+      }else{
+        echo 'Virtual path to the version already exists'
+        $latestVersion
+      }
+
+- task: NuGetCommand@2
+  displayName: Restore nuget packages.
+  inputs:
+    command: 'restore'
+    restoreSolution: '**/*.sln'
+    feedsToUse: 'config'
+    nugetConfigPath: './nuget.config'
+
+- task: DotNetCoreCLI@2  
+  displayName: 'Build Project'
+  inputs:
+    command: 'build'
+    projects: '**/*.Api.csproj'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Build project mode publish - EnvironmentName=production'
+  inputs:
+    command: 'publish'
+    publishWebProjects: true
+    arguments: '/p:EnvironmentName=production'     
+    modifyOutputPath: true
+
+- task: AzureRmWebAppDeployment@4
+  displayName: 'Publish project into Azure App Service'
+  inputs:
+    ConnectionType: 'AzureRM'
+    azureSubscription: {YOUR SUBSCRIPTION IN PORTAL AZURE}
+    appType: 'webApp'
+    WebAppName: {NAME YOUR PROJECT}
+    VirtualApplication: '/$(LATEST_VERSION)'
+    packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'   

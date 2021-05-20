@@ -12,8 +12,8 @@ namespace Started.RabbitMq.Example
             {
                 HostName = "localhost",
                 Port = Protocols.DefaultProtocol.DefaultPort,
-                UserName = "admin",
-                Password = "admin",
+                UserName = "guest",
+                Password = "guest",
                 VirtualHost = "/",
                 RequestedHeartbeat = TimeSpan.FromSeconds(60)
             };
@@ -28,7 +28,7 @@ namespace Started.RabbitMq.Example
 
                     channel.QueueBind("TesteQueue", "TesteExchange", "TesteBind");
 
-                    var message = "Olá Teste RabbitMQ";
+                    var message = "Olá Teste RabbitMQ - DOIS TRES";
                     var body = Encoding.UTF8.GetBytes(message);
 
                     var properties = channel.CreateBasicProperties();

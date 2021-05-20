@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SML.Core.Orquestra.ECM.AntiCorruption.Domain" Version="1.0.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\GIT-IF\aplicacao-portal-sml-travelex\SML.Interfile.Travelex\AntiCorruption\SML.Core.Orquestra.ECM.AntiCorruption.Application\SML.Core.Orquestra.ECM.AntiCorruption.Application.csproj" />
+  </ItemGroup>
+
+</Project>

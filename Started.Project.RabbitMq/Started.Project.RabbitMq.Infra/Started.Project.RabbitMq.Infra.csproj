@@ -1,0 +1,92 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    
+    <!--SCRIPTS  SQLServer -->
+    <None Remove="Resources\SQLServer\DemoRepository\Delete.sql" />
+    <None Remove="Resources\SQLServer\DemoRepository\GetDemoQueryResult.sql" />
+    <None Remove="Resources\SQLServer\DemoRepository\Insert.sql" />
+    <None Remove="Resources\SQLServer\DemoRepository\ListDemoQueryResult.sql" />
+    
+    <!--SCRIPTS  Oracle -->
+    <None Remove="Resources\Oracle\DemoRepository\Delete.sql" />
+    <None Remove="Resources\Oracle\DemoRepository\GetDemoQueryResult.sql" />
+    <None Remove="Resources\Oracle\DemoRepository\Insert.sql" />
+    <None Remove="Resources\Oracle\DemoRepository\ListDemoQueryResult.sql" />
+
+    <!--SCRIPTS  PostgreeSQL -->
+    <None Remove="Resources\PostgreSQL\DemoRepository\Delete.sql" />
+    <None Remove="Resources\PostgreSQL\DemoRepository\GetDemoQueryResult.sql" />
+    <None Remove="Resources\PostgreSQL\DemoRepository\Insert.sql" />
+    <None Remove="Resources\PostgreSQL\DemoRepository\ListDemoQueryResult.sql" />
+
+  </ItemGroup>
+
+  <ItemGroup>
+
+     <!--SCRIPTS  SQLServer -->
+    <EmbeddedResource Include="Resources\SQLServer\DemoRepository\Delete.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\SQLServer\DemoRepository\Insert.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\SQLServer\DemoRepository\ListDemoQueryResult.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\SQLServer\DemoRepository\GetDemoQueryResult.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+
+    <!--SCRIPTS  Oracle -->
+    <EmbeddedResource Include="Resources\Oracle\DemoRepository\GetDemoQueryResult.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Oracle\DemoRepository\Insert.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Oracle\DemoRepository\Delete.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Oracle\DemoRepository\ListDemoQueryResult.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+
+    <!--SCRIPTS  PostgreSQL -->
+    <EmbeddedResource Include="Resources\PostgreSQL\DemoRepository\GetDemoQueryResult.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\PostgreSQL\DemoRepository\Insert.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\PostgreSQL\DemoRepository\Delete.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\PostgreSQL\DemoRepository\ListDemoQueryResult.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Started.Project.RabbitMq.Domain\Started.Project.RabbitMq.Domain.csproj" />
+    <ProjectReference Include="..\Started.Project.RabbitMq.Shared\Started.Project.RabbitMq.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="dapper" Version="2.0.90" />
+    <PackageReference Include="Npgsql" Version="3.2.7" />
+    <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="2.12.0-beta2" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.4.3" />
+    <PackageReference Include="System.Xml.ReaderWriter" Version="4.3.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+</Project>
